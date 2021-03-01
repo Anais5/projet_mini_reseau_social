@@ -1,4 +1,4 @@
-from flask import Flask, url_for, request, redirect
+from flask import Flask, url_for, request, redirect, render_template
 from outils.data_base import DataBase
 from outils.settings import DATABASE, DB_NAME
 
@@ -8,23 +8,7 @@ db = DataBase(DB_NAME, DATABASE)
 #page d'accueil
 @app.route('/', methods=["GET", "POST"])
 def accueil():
-    articles = [
-        f"""
-        <article>
-            <h3 style="margin-bottom: 0">{titre}</h3>
-            <p style="margin-top: 0; font-size: 80%">
-            crée le {cree_le} par <em>{login}</em>
-            </p>
-            <p style="padding-left: 20px">{contenu}</p>
-            <a href="{{ url_for('supprimer', id=id_article) }}">supprimer cet article</a>
-            <hr/>
-            </article>
-        """
-        for _, login, cree_le, titre, contenu in db.recuperer_articles()
-    ]
-    return f"""
-    <nav><a href="{url_for('ajouter')}">Nouvel article</a></nav>
-    """ + "\n".join(articles)
+    return render_template('accueil.html', articles=db.recuperer_articles())
 
 @app.route('/ajouter', methods=["GET", "POST"])
 def ajouter():
