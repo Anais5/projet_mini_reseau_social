@@ -20,7 +20,7 @@ class DataBase:
 
     def inserer_article(self, auteur_id, titre, contenu):
         with self.conn as c:
-            curs = c.execute(
+            c.execute(
                 """INSERT INTO articles (auteur_id, titre, contenu)
                     VALUES (?, ?, ?)""",
                 (auteur_id, titre, contenu)
@@ -29,8 +29,23 @@ class DataBase:
 
     def supprimer_article(self, id_article):
         with self.conn as c:
-            curs = c.execute(
+            c.execute(
                 """DELETE FROM articles WHERE id = ?""",
                 (id_article,)
             )
+            c.commit()
+
+    def recuperer_compte(self, nom, mdp):
+        with self.conn as c:
+            curs = c.execute("")
+        return curs.fetchall()
+
+    def recuperer_messages(self, nom, mdp):
+        with self.conn as c:
+            curs = c.execute("")
+        return curs.fetchall()
+
+    def enregistrer_messages(self, nom):
+        with self.conn as c:
+            c.execute("")
             c.commit()
