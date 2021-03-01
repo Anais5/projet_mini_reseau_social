@@ -1,6 +1,5 @@
-from flask import Flask
-from pages.accueil import supprimer, accueil
+"""from flask import Flask
 
 app = Flask(__name__, template_folder='templates')
 
-app.run(debug="on")
+app.run(debug="on")"""

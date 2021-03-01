@@ -1,7 +1,11 @@
-from flask import url_for, request, redirect
-from outils.gestion_articles import recuperer_articles, inserer_article, supprimer_article
-from __main__ import app
+from flask import Flask, url_for, request, redirect
+from outils.data_base import DataBase
+from outils.settings import DATABASE, DB_NAME
 
+app = Flask(__name__, template_folder='templates')
+db = DataBase(DB_NAME, DATABASE)
+
+#page d'accueil
 @app.route('/', methods=["GET", "POST"])
 def accueil():
     articles = [
@@ -16,7 +20,7 @@ def accueil():
             <hr/>
             </article>
         """
-        for _, login, cree_le, titre, contenu in recuperer_articles()
+        for _, login, cree_le, titre, contenu in db.recuperer_articles()
     ]
     return f"""
     <nav><a href="{url_for('ajouter')}">Nouvel article</a></nav>
@@ -28,7 +32,7 @@ def ajouter():
         titre = request.form["titre"]
         contenu = request.form["contenu"]
         if titre and contenu:
-            inserer_article(1, titre, contenu)
+            db.inserer_article(1, titre, contenu)
             return redirect(url_for('accueil'))
 
     return """
@@ -41,6 +45,7 @@ def ajouter():
 
 @app.route('/supprimer/<int:id>')
 def supprimer(id_article):
-    supprimer_article(id_article)
+    db.supprimer_article(id_article)
     return redirect(url_for('accueil'))
 
+app.run(debug="on")
