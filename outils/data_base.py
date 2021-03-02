@@ -1,5 +1,8 @@
 import sqlite3 as sql
 
+class Membre:
+    def __init__(self):
+        self.id =
 class DataBase:
     def __init__(self, data_base_name, data_base_dir):
         self.name = data_base_name
