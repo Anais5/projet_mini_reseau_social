@@ -1,30 +1,57 @@
-from flask import Flask, url_for, request, redirect
+from flask import Flask, url_for, request, redirect, render_template, session
 from outils.data_base import DataBase
 from outils.settings import DATABASE, DB_NAME
 
 app = Flask(__name__, template_folder='templates')
+app.secret_key = "dev"
 db = DataBase(DB_NAME, DATABASE)
 
 #page d'accueil
 @app.route('/', methods=["GET", "POST"])
 def accueil():
-    articles = [
-        f"""
-        <article>
-            <h3 style="margin-bottom: 0">{titre}</h3>
-            <p style="margin-top: 0; font-size: 80%">
-            crée le {cree_le} par <em>{login}</em>
-            </p>
-            <p style="padding-left: 20px">{contenu}</p>
-            <a href="{{ url_for('supprimer', id=id_article) }}">supprimer cet article</a>
-            <hr/>
-            </article>
-        """
-        for _, login, cree_le, titre, contenu in db.recuperer_articles()
-    ]
-    return f"""
-    <nav><a href="{url_for('ajouter')}">Nouvel article</a></nav>
-    """ + "\n".join(articles)
+    return render_template('accueil.html', articles=db.recuperer_articles())
+
+@app.route('/login', methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        login = request.form["username"]
+        mdp = request.form["password"]
+        membre = db.recuperer_compte(login, mdp)
+        # membre = None ou est un 2-tuple de la forme (id, mdp)
+        if membre and membre[1] == mdp: # mieux: check_password_hash(membre[1], mdp)
+            session.clear()
+            # enregistrons quelques informations utiles dans l'objet session.
+            session['mbrid'] = membre[0]
+            session['login'] = login
+            return redirect(url_for('accueil'))
+    # si "GET" ou si l'utilisateur n'est pas reconnue
+    return render_template(
+        'login.html'
+    )
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('accueil'))
+
+@app.route('/inscription', methods=["GET", "POST"])
+def inscrire():
+    if request.method == "POST":
+        login = request.form["username"]
+        mdp = request.form["password"]
+        membre = db.recuperer_compte(login, mdp)
+        verif = db.verif_pseudo(login)
+        assert membre == None, 'Vous êtes déjà inscrit.'
+        assert verif == None, 'Ce pseudo est déjà prit.'
+        db.ajouter_membre(login, mdp)
+        membre = (login, mdp)
+        # commencer la session
+        session.clear()
+        # enregistrons quelques informations utiles dans l'objet session.
+        session['mbrid'] = membre[0]
+        session['login'] = login
+        return redirect(url_for('accueil'))
+    return render_template('inscription.html')
 
 @app.route('/ajouter', methods=["GET", "POST"])
 def ajouter():
@@ -46,6 +73,13 @@ def ajouter():
 @app.route('/supprimer/<int:id>')
 def supprimer(id_article):
     db.supprimer_article(id_article)
+    return redirect(url_for('accueil'))
+
+# la suite sert juste de «bouche trou»
+
+
+@app.route('/editer')
+def editer():
     return redirect(url_for('accueil'))
 
 app.run(debug="on")
