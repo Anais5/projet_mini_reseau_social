@@ -3,6 +3,7 @@ from outils.data_base import DataBase
 from outils.settings import DATABASE, DB_NAME
 
 app = Flask(__name__, template_folder='templates')
+app.secret_key = "dev"
 db = DataBase(DB_NAME, DATABASE)
 
 #page d'accueil
@@ -13,8 +14,8 @@ def accueil():
 @app.route('/login', methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        login = request.form["login"]
-        mdp = request.form["mdp"]
+        login = request.form["username"]
+        mdp = request.form["password"]
         membre = db.recuperer_compte(login, mdp)
         # membre = None ou est un 2-tuple de la forme (id, mdp)
         if membre and membre[1] == mdp: # mieux: check_password_hash(membre[1], mdp)
@@ -35,13 +36,13 @@ def logout():
 
 @app.route('/inscription', methods=["GET", "POST"])
 def inscrire():
-    if request.method == "GET":
-        login = request.form["login"]
-        mdp = request.form["mdp"]
+    if request.method == "POST":
+        login = request.form["username"]
+        mdp = request.form["password"]
         membre = db.recuperer_compte(login, mdp)
         verif = db.verif_pseudo(login)
-        assert membre is None, 'Vous êtes déjà inscrit.'
-        assert verif is None, 'Ce pseudo est déjà prit.'
+        assert membre == None, 'Vous êtes déjà inscrit.'
+        assert verif == None, 'Ce pseudo est déjà prit.'
         db.ajouter_membre(login, mdp)
         membre = (login, mdp)
         # commencer la session
@@ -53,7 +54,7 @@ def inscrire():
     return render_template('inscription.html')
 
 @app.route('/messages')
-def inscription():
+def messagerie():
     return render_template('messagerie.html', articles=db.recuperer_articles())
 
 @app.route('/ajouter', methods=["GET", "POST"])

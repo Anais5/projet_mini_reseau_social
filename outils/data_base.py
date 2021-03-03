@@ -52,7 +52,7 @@ class DataBase:
             curs = c.execute("""SELECT login FROM membres WHERE (login = ?)""",
                              (login,)
             )
-        return curs.fetchall()
+        return curs.fetchone()
 
     def ajouter_membre(self, login, mdp):
         self.conn = sql.connect(self.dir)

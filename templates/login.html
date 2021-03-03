@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% include "base.html" %}
 
 {% block title %}Login{% endblock %}
 
@@ -7,7 +7,7 @@
     <div class="container">
         <div class="row">
             <div class="col-md-4">
-                <h2>Please login:</h2>
+                <h2>Connectez-vous :</h2>
 
                 {% if error %}
                 <p class="text-danger">Error: {{ error }}</p>
