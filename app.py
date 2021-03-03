@@ -72,8 +72,8 @@ def ajouter():
     """
 
 @app.route('/supprimer/<int:id>')
-def supprimer(id_article):
-    db.supprimer_article(id_article)
+def supprimer(id):
+    db.supprimer_article(id)
     return redirect(url_for('accueil'))
 
 # la suite sert juste de «bouche trou»
