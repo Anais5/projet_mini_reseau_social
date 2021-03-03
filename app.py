@@ -58,8 +58,9 @@ def ajouter():
     if request.method == "POST":
         titre = request.form["titre"]
         contenu = request.form["contenu"]
+        auteur_id = db.get_membre_id(session['login'])
         if titre and contenu:
-            db.inserer_article(1, titre, contenu)
+            db.inserer_article(auteur_id, titre, contenu)
             return redirect(url_for('accueil'))
 
     return """

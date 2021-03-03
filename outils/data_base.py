@@ -22,9 +22,7 @@ class DataBase:
     def inserer_article(self, auteur_id, titre, contenu):
         self.conn = sql.connect(self.dir)
         with self.conn as c:
-            c.execute(
-                """INSERT INTO articles (auteur_id, titre, contenu)
-                    VALUES (?, ?, ?)""",
+            c.execute("""INSERT INTO articles (auteur_id, titre, contenu) VALUES (?, ?, ?)""",
                 (auteur_id, titre, contenu)
             )
             c.commit()  # ne pas oublier de «valider» lorsqu'une table est modifiée.
@@ -32,9 +30,8 @@ class DataBase:
     def supprimer_article(self, id_article):
         self.conn = sql.connect(self.dir)
         with self.conn as c:
-            c.execute(
-                """DELETE FROM articles WHERE id = ?""",
-                (id_article,)
+            c.execute("""DELETE FROM articles WHERE id = ?""",
+                    (id_article,)
             )
             c.commit()
 
@@ -52,7 +49,16 @@ class DataBase:
             curs = c.execute("""SELECT login FROM membres WHERE (login = ?)""",
                              (login,)
             )
-        return curs.fetchall()
+        return curs.fetchone()
+
+    def get_membre_id(self, login):
+        self.conn = sql.connect(self.dir)
+        with self.conn as c:
+            curs = c.execute("""SELECT id FROM membres WHERE (login = ?)""",
+                             (login,)
+            )
+        id = curs.fetchone()[0]
+        return id
 
     def ajouter_membre(self, login, mdp):
         self.conn = sql.connect(self.dir)
