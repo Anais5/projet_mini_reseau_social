@@ -54,6 +54,15 @@ class DataBase:
             )
         return curs.fetchone()
 
+    def get_membre_id(self, login):
+        self.conn = sql.connect(self.dir)
+        with self.conn as c:
+            curs = c.execute("""SELECT id FROM membres WHERE (login = ?)""",
+                             (login,)
+            )
+        id = curs.fetchone()[0]
+        return id
+
     def ajouter_membre(self, login, mdp):
         self.conn = sql.connect(self.dir)
         with self.conn as c:

@@ -73,7 +73,7 @@ class ThreadEmission(threading.Thread):
         self.__is_killed = True
 
 
-def run_client(port):
+def run_client(host, port):
     host_name = socket.gethostname()
     host = socket.gethostbyname(host_name)
 
@@ -146,7 +146,7 @@ class ThreadClient(threading.Thread):
 
         # Le thread se termine ici
 
-def run_serveur(port):
+def run_serveur(host, port):
     host_name = socket.gethostname()
     host = socket.gethostbyname(host_name)
 

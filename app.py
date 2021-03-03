@@ -1,10 +1,10 @@
 from flask import Flask, url_for, request, redirect, render_template, session
 from outils.data_base import DataBase
-from outils.settings import DATABASE, DB_NAME
+from outils.settings import DB_DIR, DB_NAME, HOST_IP
 
 app = Flask(__name__, template_folder='templates')
 app.secret_key = "dev"
-db = DataBase(DB_NAME, DATABASE)
+db = DataBase(DB_NAME, DB_DIR)
 
 #page d'accueil
 @app.route('/', methods=["GET", "POST"])
@@ -87,4 +87,4 @@ def supprimer(id):
 def editer():
     return redirect(url_for('accueil'))
 
-app.run(debug="on")
+app.run(debug="on", host=HOST_IP)
