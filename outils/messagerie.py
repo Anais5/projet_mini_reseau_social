@@ -2,8 +2,6 @@
 # et la réception des messages (utilisation de 2 THREADS).
 import socket, sys, threading
 
-PORT = 40000
-
 class ThreadReception(threading.Thread):
     """Objet thread gérant la réception des messages."""
 
@@ -148,14 +146,14 @@ class ThreadClient(threading.Thread):
 
         # Le thread se termine ici
 
-def run_serveur(PORT):
+def run_serveur(port):
     host_name = socket.gethostname()
-    HOST = socket.gethostbyname(host_name)
+    host = socket.gethostbyname(host_name)
 
     # Initialisation du serveur - Mise en place du socket :
     mySocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
-        mySocket.bind((HOST, PORT))
+        mySocket.bind((host, port))
     except socket.error:
         print("La liaison du socket à l'adresse choisie a échoué.")
         sys.exit()

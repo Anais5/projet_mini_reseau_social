@@ -1,8 +1,5 @@
 import sqlite3 as sql
 
-class Membre:
-    def __init__(self):
-        self.id =
 class DataBase:
     def __init__(self, data_base_name, data_base_dir):
         self.name = data_base_name
@@ -11,6 +8,7 @@ class DataBase:
 
     def recuperer_articles(self):  # renvoie une liste de tuples
         # de la forme (login, cree_le, titre, contenu)
+        self.conn = sql.connect(self.dir)
         with self.conn as c:
             curs = c.execute(
                 """SELECT articles.id AS id_article, login, cree_le, titre, contenu
@@ -22,6 +20,7 @@ class DataBase:
             return curs.fetchall()
 
     def inserer_article(self, auteur_id, titre, contenu):
+        self.conn = sql.connect(self.dir)
         with self.conn as c:
             c.execute(
                 """INSERT INTO articles (auteur_id, titre, contenu)
@@ -31,6 +30,7 @@ class DataBase:
             c.commit()  # ne pas oublier de «valider» lorsqu'une table est modifiée.
 
     def supprimer_article(self, id_article):
+        self.conn = sql.connect(self.dir)
         with self.conn as c:
             c.execute(
                 """DELETE FROM articles WHERE id = ?""",
@@ -38,17 +38,22 @@ class DataBase:
             )
             c.commit()
 
-    def recuperer_compte(self, nom, mdp):
+    def recuperer_compte(self, login, mdp):
+        self.conn = sql.connect(self.dir)
         with self.conn as c:
-            curs = c.execute("")
+            curs = c.execute("""SELECT login, mdp FROM membres WHERE (login = ? and mdp = ?)""",
+                             (login, mdp)
+            )
         return curs.fetchall()
 
     def recuperer_messages(self, nom, mdp):
+        self.conn = sql.connect(self.dir)
         with self.conn as c:
             curs = c.execute("")
         return curs.fetchall()
 
     def enregistrer_messages(self, nom):
+        self.conn = sql.connect(self.dir)
         with self.conn as c:
             c.execute("")
             c.commit()

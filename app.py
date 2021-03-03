@@ -33,9 +33,20 @@ def logout():
     session.clear()
     return redirect(url_for('accueil'))
 
-@app.route('/inscription')
-def inscription():
-    return redirect(url_for('accueil'))
+@app.route('/inscription', methods=["GET", "POST"])
+def inscrire():
+    if request.method == "GET":
+        login = request.form["login"]
+        mdp = request.form["mdp"]
+        membre = db.recuperer_compte(login, mdp)
+        # membre = None ou est un 2-tuple de la forme (id, mdp)
+        if membre and membre[1] == mdp: # mieux: check_password_hash(membre[1], mdp)
+            session.clear()
+            # enregistrons quelques informations utiles dans l'objet session.
+            session['mbrid'] = membre[0]
+            session['login'] = login
+            return redirect(url_for('accueil'))
+    return render_template('inscription.html')
 
 @app.route('/messages')
 def inscription():
