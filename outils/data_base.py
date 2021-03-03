@@ -44,7 +44,22 @@ class DataBase:
             curs = c.execute("""SELECT login, mdp FROM membres WHERE (login = ? and mdp = ?)""",
                              (login, mdp)
             )
+        return curs.fetchone()
+
+    def verif_pseudo(self, login):
+        self.conn = sql.connect(self.dir)
+        with self.conn as c:
+            curs = c.execute("""SELECT login FROM membres WHERE (login = ?)""",
+                             (login,)
+            )
         return curs.fetchall()
+
+    def ajouter_membre(self, login, mdp):
+        self.conn = sql.connect(self.dir)
+        with self.conn as c:
+            c.execute("""INSERT INTO membres (login, mdp) VALUES (?, ?)""",
+                              (login, mdp)
+            )
 
     def recuperer_messages(self, nom, mdp):
         self.conn = sql.connect(self.dir)
