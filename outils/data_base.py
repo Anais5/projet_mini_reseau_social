@@ -72,7 +72,7 @@ class DataBase:
         self.conn = sql.connect(self.dir)
         with self.conn as c:
             curs = c.execute("""SELECT id FROM articles
-            WHERE auteur_id = ?, titre = ?, contenu = ?
+            WHERE auteur_id = ? AND titre = ? AND contenu = ?
             ORDER BY id""",
                             (auteur_id, titre, contenu)
             )
@@ -84,6 +84,6 @@ class DataBase:
         with self.conn as c:
             c.execute("""INSERT INTO tags
             VALUES (?, ?)""",
-                    (id, tag)
+                    (str(tag), id[0])
                 )
-        c.commmit
+            c.commit()
