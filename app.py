@@ -1,6 +1,7 @@
 from flask import Flask, url_for, request, redirect, render_template, session
 from outils.data_base import DataBase
 from outils.settings import DATABASE, DB_NAME
+from outils.fonctions import liste_tags
 
 app = Flask(__name__, template_folder='templates')
 app.secret_key = "dev"
@@ -58,15 +59,22 @@ def ajouter():
     if request.method == "POST":
         titre = request.form["titre"]
         contenu = request.form["contenu"]
+        tags = liste_tags(request.form["tags"])
         auteur_id = db.get_membre_id(session['login'])
         if titre and contenu:
             db.inserer_article(auteur_id, titre, contenu)
+            if tags:
+                id = db.recuperer_id(auteur_id, titre, contenu)
+                #for tag in tags:
+                    #db.inserer_tags(id, tag)
+                print(id)
             return redirect(url_for('accueil'))
 
     return """
     <form method="post">
-        Titre: <input name="titre"/><br/>
-        Contenu: <textarea name="contenu"></textarea><br/>
+        Titre*: <input name="titre"/><br/>
+        Contenu*: <textarea name="contenu"></textarea><br/>
+        Tags (séparés par des virgules): <input name="tags"/><br/>
         <input type="submit" value="Enregistrer"/>
     </form>
     """
