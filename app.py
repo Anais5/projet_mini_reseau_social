@@ -63,6 +63,15 @@ def inscrire():
         return redirect(url_for('accueil'))
     return render_template('inscription.html')
 
+
+@app.route('/supprimer_compte', methods=["GET", "POST"])
+def suppr_compte():
+    auteur_id = db.get_membre_id(session['login'])
+    db.supprimer_compte(auteur_id ,session['login'])
+    logout()
+    return redirect(url_for('accueil'))
+
+
 @app.route('/ajouter', methods=["GET", "POST"])
 def ajouter():
     if request.method == "POST":

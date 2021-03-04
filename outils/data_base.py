@@ -34,6 +34,17 @@ class DataBase:
             )
             c.commit()
 
+    def supprimer_compte(self, auteur_id, login):
+        self.conn = sql.connect(self.dir)
+        with self.conn as c:
+            c.execute("""DELETE FROM articles WHERE auteur_id = ?""",
+                      (auteur_id,)
+            )
+            c.execute("""DELETE FROM membres WHERE login = ?""",
+                      (login,)
+            )
+            c.commit()
+
     def recuperer_compte(self, login, mdp):
         self.conn = sql.connect(self.dir)
         with self.conn as c:
