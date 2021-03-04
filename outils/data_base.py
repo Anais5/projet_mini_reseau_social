@@ -1,8 +1,7 @@
 import sqlite3 as sql
 
 class DataBase:
-    def __init__(self, data_base_name, data_base_dir):
-        self.name = data_base_name
+    def __init__(self, data_base_dir):
         self.dir = data_base_dir
         self.conn = sql.connect(data_base_dir)
 

@@ -10,7 +10,7 @@
                 <h2>Inscrivez-vous :</h2>
 
                 {% if error %}
-                <p class="text-danger">Error: {{ error }}</p>
+                <p class="text-danger">Erreur: {{ error }}</p>
                 {% endif %}
 
                 <form action="{{ url_for('inscrire') }}" method="post">
