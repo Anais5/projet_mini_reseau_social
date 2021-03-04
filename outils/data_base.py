@@ -51,6 +51,7 @@ class DataBase:
             curs = c.execute("""SELECT login, mdp FROM membres WHERE (login = ? and mdp = ?)""",
                              (login, mdp)
             )
+            c.commit()
         return curs.fetchone()
 
     def verif_pseudo(self, login):
@@ -76,3 +77,24 @@ class DataBase:
             c.execute("""INSERT INTO membres (login, mdp) VALUES (?, ?)""",
                               (login, mdp)
             )
+            c.commit()
+
+    def recuperer_id(self, auteur_id, titre, contenu):
+        self.conn = sql.connect(self.dir)
+        with self.conn as c:
+            curs = c.execute("""SELECT id FROM articles
+            WHERE auteur_id = ? AND titre = ? AND contenu = ?
+            ORDER BY id""",
+                            (auteur_id, titre, contenu)
+            )
+        id = curs.fetchall()[-1]
+        return id
+
+    def inserer_tag(self, id, tag):
+        self.conn = sql.connect(self.dir)
+        with self.conn as c:
+            c.execute("""INSERT INTO tags
+            VALUES (?, ?)""",
+                    (str(tag), id[0])
+                )
+            c.commit()
