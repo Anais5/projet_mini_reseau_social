@@ -62,6 +62,13 @@ def inscrire():
         return redirect(url_for('accueil'))
     return render_template('inscription.html')
 
+@app.route('/supprimer_compte', methods=["GET", "POST"])
+def suppr_compte():
+    auteur_id = db.get_membre_id(session['login'])
+    db.supprimer_compte(auteur_id ,session['login'])
+    logout()
+    return redirect(url_for('accueil'))
+
 @app.route('/messages')
 def messagerie():
     return render_template('messagerie.html', articles=db.recuperer_articles())
