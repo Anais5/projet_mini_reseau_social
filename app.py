@@ -17,6 +17,13 @@ def login():
         login = request.form["username"]
         mdp = request.form["password"]
         membre = db.recuperer_compte(login, mdp)
+        verif = db.verif_pseudo(login)
+        if verif is None:
+            error = 'Identifiant incorrect.'
+            return render_template('login.html', error=error)
+        if membre is None:
+            error = "Mot de passe incorrect."
+            return render_template('login.html', error=error)
         # membre = None ou est un 2-tuple de la forme (id, mdp)
         if membre and membre[1] == mdp: # mieux: check_password_hash(membre[1], mdp)
             session.clear()
@@ -24,10 +31,8 @@ def login():
             session['mbrid'] = membre[0]
             session['login'] = login
             return redirect(url_for('accueil'))
-    # si "GET" ou si l'utilisateur n'est pas reconnue
-    return render_template(
-        'login.html'
-    )
+    return render_template('login.html')
+
 
 @app.route('/logout')
 def logout():
@@ -41,8 +46,12 @@ def inscrire():
         mdp = request.form["password"]
         membre = db.recuperer_compte(login, mdp)
         verif = db.verif_pseudo(login)
-        assert membre == None, 'Vous êtes déjà inscrit.'
-        assert verif == None, 'Ce pseudo est déjà prit.'
+        if membre is not None:
+            error = 'Vous êtes déjà inscrit.'
+            return render_template('inscription.html', error=error)
+        if verif is not None:
+            error = 'Identifiant déjà pris.'
+            return render_template('inscription.html', error=error)
         db.ajouter_membre(login, mdp)
         membre = (login, mdp)
         # commencer la session
