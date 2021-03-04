@@ -4,7 +4,7 @@ from outils.settings import DB_DIR, DB_NAME, HOST_IP
 
 app = Flask(__name__, template_folder='templates')
 app.secret_key = "dev"
-db = DataBase(DB_NAME, DB_DIR)
+db = DataBase(DB_DIR)
 
 #page d'accueil
 @app.route('/', methods=["GET", "POST"])
