@@ -1,0 +1,15 @@
+<!doctype html>
+<html>
+  <head>
+    {% include 'head.html' %}
+    <title>{% block titre %}{% endblock %}Micro Blog NSI</title>
+  </head>
+  <body>
+    <section>
+      <header>
+        {% block entete %}{% endblock %}
+      </header>
+        {% block contenu %}{% endblock %}
+    </section>
+  </body>
+</html>

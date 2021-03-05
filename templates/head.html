@@ -1,0 +1,13 @@
+<h1>Mini-Blog</h1>
+<ul>
+{% if 'login' in session %}
+  <li><span>{{ session['login'] }}</span>
+  <li><a href="{{ url_for('accueil') }}">Revenir à l'accueil</a>
+  <li><a href="{{ url_for('logout') }}">Se déconnecter</a>
+  <li><a href="{{ url_for('suppr_compte') }}">Supprimer compte</a>
+{% else %}
+  <li><a href="{{ url_for('accueil') }}">Revenir à l'accueil</a>
+  <li><a href="{{ url_for('inscrire') }}">S'inscrire</a>
+  <li><a href="{{ url_for('login') }}">Se connecter</a>
+{% endif %}
+</ul>
