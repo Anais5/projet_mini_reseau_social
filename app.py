@@ -100,16 +100,21 @@ def supprimer(id):
     db.supprimer_article(id)
     return redirect(url_for('accueil'))
 
+@app.route('/profil/<user>')
+def profil(user):
+    id = db.get_membre_id(user)
+    return render_template('profil.html', articles=db.recuperer_articles_membre(id), user=user, id=id)
+
 @app.route('/recherche_membre/', methods=["GET", "POST"])
 def recherche_membre():
     if request.method == "POST":
         user = request.form["username"]
         id = db.get_membre_id(user)
-        if id and user:
-            return render_template('profil.html', articles=db.recuperer_articles_membre(id), user=user)
-        else:
+        if id is None:
             error = f"Il n'y a pas de membre portant le pseudo {user} !"
             return render_template('profil.html', error=error)
+        else:
+            return redirect(url_for('profil', user=user))
     return render_template('profil.html')
 
 app.run(host=HOST_IP)
