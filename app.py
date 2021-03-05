@@ -77,20 +77,20 @@ def ajouter():
     if request.method == "POST":
         titre = request.form["titre"]
         contenu = request.form["contenu"]
-        tags = liste_tags(request.form["tags"])
+        #tags = liste_tags(request.form["tags"])
         auteur_id = db.get_membre_id(session['login'])
         if titre and contenu:
             db.inserer_article(auteur_id, titre, contenu)
-            if tags:
+            '''if tags:
                 id = db.recuperer_id(auteur_id, titre, contenu)
                 for tag in tags:
-                    db.inserer_tag(id, tag)
+                    db.inserer_tag(id, tag)'''
             return redirect(url_for('accueil'))
     return """
     <form method="post">
         Titre*: <input name="titre"/><br/>
         Contenu*: <textarea name="contenu"></textarea><br/>
-        Tags (séparés par des virgules): <input name="tags"/><br/>
+        <! -- Tags (séparés par des virgules): <input name="tags"/><br/> -->
         <input type="submit" value="Enregistrer"/>
     </form>
     """
@@ -105,7 +105,7 @@ def recherche_membre():
     if request.method == "POST":
         user = request.form["username"]
         id = db.get_membre_id(user)
-        if id:
+        if id and user:
             return render_template('profil.html', articles=db.recuperer_articles_membre(id), user=user)
         else:
             error = f"Il n'y a pas de membre portant le pseudo {user} !"
