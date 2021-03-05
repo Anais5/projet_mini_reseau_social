@@ -104,11 +104,21 @@ class DataBase:
         return id
 
 
-'''   def inserer_tag(self, id, tag):
+    def inserer_tag(self, id, tag):
         self.conn = sql.connect(self.dir)
         with self.conn as c:
             c.execute("""INSERT INTO tags
             VALUES (?, ?)""",
                     (str(tag), id[0])
                 )
-            c.commit()'''
+            c.commit()
+
+    def rechercher_tags(self):
+        tags = []
+        self.conn = sql.connect(self.dir)
+        with self.conn as c:
+            curs = c.execute("""SELECT DISTINCT tag
+            FROM TAGS""")
+            for element in curs:
+                tags.append(element[0])
+        return tags

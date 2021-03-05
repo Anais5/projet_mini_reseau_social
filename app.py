@@ -1,6 +1,6 @@
 from flask import Flask, url_for, request, redirect, render_template, session
 from outils.data_base import DataBase
-from outils.fonctions import liste_tags
+from outils.fonctions import liste_tags, page_recherche_tags
 from outils.settings import DB_DIR, HOST_IP
 
 app = Flask(__name__, template_folder='templates')
@@ -90,7 +90,7 @@ def ajouter():
     <form method="post">
         Titre*: <input name="titre"/><br/>
         Contenu*: <textarea name="contenu"></textarea><br/>
-        <! -- Tags (séparés par des virgules): <input name="tags"/><br/> -->
+        Tags (séparés par des virgules): <input name="tags"/><br/>
         <input type="submit" value="Enregistrer"/>
     </form>
     """
@@ -116,5 +116,18 @@ def recherche_membre():
         else:
             return redirect(url_for('profil', user=user))
     return render_template('profil.html')
+
+@app.route('/recherche', methods=["GET", "POST"])
+def recherche_tags():
+    if request.method == "POST":
+        pass
+        tags = None
+        return redirect(url_for('resultat_recherche_par_tags', tags=tags))
+    tags_existants = db.rechercher_tags()
+    return page_recherche_tags(tags_existants)
+
+#@app.route('resultat_recherche/<tags>')
+#def resultat_recherche_par_tags(tags):
+    #pass
 
 app.run(host=HOST_IP)
