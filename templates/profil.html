@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block entete %}
+  <h1>{% block titre %}Profil{% endblock %}</h1>
+    <form action="{{ url_for('recherche_membre') }}" method="post">
+      <div class="form-group">
+        <label for="username">Cherchez un membre:</label>
+          <input type="text" name="username" id="username" class="form-control">
+      </div>
+      <button type="submit">Recherche</button>
+    </form>
+{% endblock %}
+
+{% block contenu %}
+    {% if error %}
+    <h1>Erreur: {{ error }}</h1>
+    {% endif %}
+
+    {% if id %}
+    <h1>Articles de {{ user }}</h1>
+      {% for article_id, cree_le, titre, contenu in articles %}
+          <article>
+            <head>
+              <h1>{{ titre }}</h1>
+              <aside>
+                crée le {{ cree_le }} par <em>{{ user }}</em>
+              </aside>
+            </head>
+            <p class="contenu">{{ contenu }}</p>
+            {% if 'login' in session and session['login'] == user %}
+              <a href="{{ url_for('supprimer', id=article_id) }}">supprimer cet article</a>
+            {% endif %}
+            {% if not loop.last %}
+            <hr/>
+            {% endif %}
+          </article>
+      {% endfor %}
+    {% endif %}
+{% endblock %}

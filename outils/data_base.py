@@ -67,8 +67,21 @@ class DataBase:
             curs = c.execute("""SELECT id FROM membres WHERE (login = ?)""",
                              (login,)
             )
-        id = curs.fetchone()[0]
+        id = curs.fetchone()
+        if id:
+            return id[0]
         return id
+
+    def recuperer_articles_membre(self, id):
+        self.conn = sql.connect(self.dir)
+        with self.conn as c:
+            curs = c.execute("""SELECT id AS id_article, cree_le, titre, contenu
+                                FROM articles
+                                WHERE (auteur_id = ?)
+                                ORDER BY articles.cree_le DESC""",
+                             (id,)
+            )
+        return curs.fetchall()
 
     def ajouter_membre(self, login, mdp):
         self.conn = sql.connect(self.dir)

@@ -80,7 +80,6 @@ def ajouter():
         if titre and contenu:
             db.inserer_article(auteur_id, titre, contenu)
             return redirect(url_for('accueil'))
-
     return """
     <form method="post">
         Titre: <input name="titre"/><br/>
@@ -94,10 +93,16 @@ def supprimer(id):
     db.supprimer_article(id)
     return redirect(url_for('accueil'))
 
-# la suite sert juste de «bouche trou»
-
-@app.route('/editer')
-def editer():
-    return redirect(url_for('accueil'))
+@app.route('/recherche_membre/', methods=["GET", "POST"])
+def recherche_membre():
+    if request.method == "POST":
+        user = request.form["username"]
+        id = db.get_membre_id(user)
+        if id:
+            return render_template('profil.html', articles=db.recuperer_articles_membre(id), user=user)
+        else:
+            error = f"Il n'y a pas de membre portant le pseudo {user} !"
+            return render_template('profil.html', error=error)
+    return render_template('profil.html')
 
 app.run(host=HOST_IP)
