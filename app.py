@@ -1,6 +1,6 @@
 from flask import Flask, url_for, request, redirect, render_template, session
 from outils.data_base import DataBase
-from outils.fonctions import liste_tags, page_recherche_tags
+from outils.fonctions import liste_tags, page_recherche_tags, separer_tags
 from outils.settings import DB_DIR, HOST_IP
 
 app = Flask(__name__, template_folder='templates')
@@ -77,14 +77,14 @@ def ajouter():
     if request.method == "POST":
         titre = request.form["titre"]
         contenu = request.form["contenu"]
-        #tags = liste_tags(request.form["tags"])
+        tags = liste_tags(request.form["tags"])
         auteur_id = db.get_membre_id(session['login'])
         if titre and contenu:
             db.inserer_article(auteur_id, titre, contenu)
-            '''if tags:
+            if tags:
                 id = db.recuperer_id(auteur_id, titre, contenu)
                 for tag in tags:
-                    db.inserer_tag(id, tag)'''
+                    db.inserer_tag(id, tag)
             return redirect(url_for('accueil'))
     return """
     <form method="post">
@@ -120,14 +120,14 @@ def recherche_membre():
 @app.route('/recherche', methods=["GET", "POST"])
 def recherche_tags():
     if request.method == "POST":
-        pass
-        tags = None
-        return redirect(url_for('resultat_recherche_par_tags', tags=tags))
+        tags = request.form["tags"]
+        print(tags)
+        return redirect(url_for('resultat_recherche', tags=tags))
     tags_existants = db.rechercher_tags()
     return page_recherche_tags(tags_existants)
 
-#@app.route('resultat_recherche/<tags>')
-#def resultat_recherche_par_tags(tags):
-    #pass
+@app.route('/resultat_recherche/<tags>')
+def resultat_recherche(tags):
+    liste_tags = separer_tags(tags)
 
 app.run(host=HOST_IP)

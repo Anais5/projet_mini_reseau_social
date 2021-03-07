@@ -11,10 +11,13 @@ def liste_tags(tags):
     return liste
 
 def page_recherche_tags(tags):
-    html = "<h1>Rechercher un article à propos de:</h1><br/>\n"
+    html = "<form method='post'><h1>Rechercher un article à propos de:</h1><br/>\n"
     for i in range(len(tags)):
-        html += "<input type='checkbox'/> {}\n".format(tags[i])
+        html += "<input type='checkbox' name='tags' value='{}'/> {}\n".format(tags[i], tags[i])
         if (i+1) % 5 == 0:
             html += "<br/>"
-    html += "<br/><input type='button' value='recherhcer'/>"
+    html += "<br/><input type='submit' value='Rechercher'/></form>"
     return html
+
+def separer_tags(tags):
+    pass
