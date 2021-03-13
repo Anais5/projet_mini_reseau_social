@@ -1,6 +1,7 @@
 from flask import Flask, url_for, request, redirect, render_template, session
+from werkzeug.security import generate_password_hash, check_password_hash
 from outils.data_base import DataBase
-from outils.fonctions import liste_tags
+#from outils.fonctions import liste_tags
 from outils.settings import DB_DIR, HOST_IP
 
 app = Flask(__name__, template_folder='templates')
@@ -17,7 +18,8 @@ def login():
     if request.method == "POST":
         login = request.form["username"]
         mdp = request.form["password"]
-        membre = db.recuperer_compte(login, mdp)
+        membre = db.recuperer_compte(login)
+        membre = membre[0]
         verif = db.verif_pseudo(login)
         if verif is None:
             error = 'Identifiant incorrect.'
@@ -26,7 +28,7 @@ def login():
             error = "Mot de passe incorrect."
             return render_template('login.html', error=error)
         # membre = None ou est un 2-tuple de la forme (id, mdp)
-        if membre and membre[1] == mdp: # mieux: check_password_hash(membre[1], mdp)
+        if check_password_hash(membre[1], mdp) == True: # mieux: check_password_hash(membre[1], mdp)
             session.clear()
             # enregistrons quelques informations utiles dans l'objet session.
             session['mbrid'] = membre[0]
@@ -45,7 +47,7 @@ def inscrire():
     if request.method == "POST":
         login = request.form["username"]
         mdp = request.form["password"]
-        membre = db.recuperer_compte(login, mdp)
+        membre = db.recuperer_compte(login)
         verif = db.verif_pseudo(login)
         if membre is not None:
             error = 'Vous êtes déjà inscrit.'
@@ -53,7 +55,8 @@ def inscrire():
         if verif is not None:
             error = 'Identifiant déjà pris.'
             return render_template('inscription.html', error=error)
-        db.ajouter_membre(login, mdp)
+        hashed_value = generate_password_hash(mdp, method='pbkdf2:sha256')
+        db.ajouter_membre(login, hashed_value)
         membre = (login, mdp)
         # commencer la session
         session.clear()
@@ -77,20 +80,20 @@ def ajouter():
     if request.method == "POST":
         titre = request.form["titre"]
         contenu = request.form["contenu"]
-        #tags = liste_tags(request.form["tags"])
+        tags = liste_tags(request.form["tags"])
         auteur_id = db.get_membre_id(session['login'])
         if titre and contenu:
             db.inserer_article(auteur_id, titre, contenu)
-            '''if tags:
+            if tags:
                 id = db.recuperer_id(auteur_id, titre, contenu)
                 for tag in tags:
-                    db.inserer_tag(id, tag)'''
+                    db.inserer_tag(id, tag)
             return redirect(url_for('accueil'))
     return """
     <form method="post">
         Titre*: <input name="titre"/><br/>
         Contenu*: <textarea name="contenu"></textarea><br/>
-        <! -- Tags (séparés par des virgules): <input name="tags"/><br/> -->
+        Tags (séparés par des virgules): <input name="tags"/><br/>
         <input type="submit" value="Enregistrer"/>
     </form>
     """
@@ -100,21 +103,16 @@ def supprimer(id):
     db.supprimer_article(id)
     return redirect(url_for('accueil'))
 
-@app.route('/profil/<user>')
-def profil(user):
-    id = db.get_membre_id(user)
-    return render_template('profil.html', articles=db.recuperer_articles_membre(id), user=user, id=id)
-
 @app.route('/recherche_membre/', methods=["GET", "POST"])
 def recherche_membre():
     if request.method == "POST":
         user = request.form["username"]
         id = db.get_membre_id(user)
-        if id is None:
+        if id:
+            return render_template('profil.html', articles=db.recuperer_articles_membre(id), user=user)
+        else:
             error = f"Il n'y a pas de membre portant le pseudo {user} !"
             return render_template('profil.html', error=error)
-        else:
-            return redirect(url_for('profil', user=user))
     return render_template('profil.html')
 
 app.run(host=HOST_IP)
