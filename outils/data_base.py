@@ -1,5 +1,6 @@
 import sqlite3 as sql
 
+
 class DataBase:
     def __init__(self, data_base_dir):
         self.dir = data_base_dir
@@ -45,14 +46,14 @@ class DataBase:
             )
             c.commit()
 
-    def recuperer_compte(self, login, mdp):
+
+    def recuperer_compte(self, login):
         self.conn = sql.connect(self.dir)
-        with self.conn as c:
-            curs = c.execute("""SELECT login, mdp FROM membres WHERE (login = ? and mdp = ?)""",
-                             (login, mdp)
-            )
-            c.commit()
-        return curs.fetchone()
+        curs = self.conn.cursor()
+        curs.execute("""SELECT login, mdp FROM membres WHERE login = ?""",
+                     (login,)
+                     )
+        return curs.fetchall()
 
     def verif_pseudo(self, login):
         self.conn = sql.connect(self.dir)
