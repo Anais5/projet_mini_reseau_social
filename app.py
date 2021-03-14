@@ -119,15 +119,25 @@ def recherche_membre():
 
 @app.route('/recherche', methods=["GET", "POST"])
 def recherche_tags():
-    if request.method == "POST":
-        tags = request.form["tags"]
-        print(tags)
-        return redirect(url_for('resultat_recherche', tags=tags))
     tags_existants = db.rechercher_tags()
+    if request.method == "POST":
+        recherche = []
+        for tag in tags_existants:
+            courant = request.form[tag]
+            if courant == 'on':
+                recherche.append(courant)
+        tags = "&".join(recherche)
+        return redirect(url_for('resultat_recherche', tags=tags))
     return page_recherche_tags(tags_existants)
 
 @app.route('/resultat_recherche/<tags>')
 def resultat_recherche(tags):
     liste_tags = separer_tags(tags)
+    liste_articles = []
+    for tag in liste_tags:
+        articles_tag = recuperer_id_article(tag)
+        liste_articles.append(articles_tag)
+    for article in liste_articles:
+        pass
 
 app.run(host=HOST_IP)

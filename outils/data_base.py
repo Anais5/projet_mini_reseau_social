@@ -100,8 +100,8 @@ class DataBase:
             ORDER BY id""",
                             (auteur_id, titre, contenu)
             )
-        id = curs.fetchall()[-1]
-        return id
+        id_a = curs.fetchall()[-1]
+        return id_a
 
 
     def inserer_tag(self, id, tag):
@@ -118,7 +118,16 @@ class DataBase:
         self.conn = sql.connect(self.dir)
         with self.conn as c:
             curs = c.execute("""SELECT DISTINCT tag
-            FROM TAGS""")
+            FROM tags""")
             for element in curs:
                 tags.append(element[0])
         return tags
+
+    def recuperer_id_article(tag):
+        self.conn = sql.connect(self.dir)
+        with self.conn as c:
+            curs = c.execute("""SELECT id 
+            FROM tags WHERE tags.tag = ?""", 
+            (tag,))
+            articles = curs.fetchall()
+        return articles
