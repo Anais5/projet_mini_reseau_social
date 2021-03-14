@@ -16,7 +16,7 @@
     <h1>Erreur: {{ error }}</h1>
     {% endif %}
 
-    {% if id and user %}
+    {% if user %}
     <h1>Articles de {{ user }}</h1>
       {% for article_id, cree_le, titre, contenu in articles %}
           <article>

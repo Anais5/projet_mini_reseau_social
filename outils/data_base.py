@@ -109,16 +109,42 @@ class DataBase:
             ORDER BY id""",
                             (auteur_id, titre, contenu)
             )
-        id = curs.fetchall()[-1]
-        return id
+        id_a = curs.fetchall()[-1]
+        return id_a
 
 
-'''   def inserer_tag(self, id, tag):
+    def inserer_tag(self, id, tag):
         self.conn = sql.connect(self.dir)
         with self.conn as c:
             c.execute("""INSERT INTO tags
             VALUES (?, ?)""",
                     (str(tag), id[0])
                 )
-            c.commit()'''
+            c.commit()
 
+    def rechercher_tags(self):
+        tags = []
+        self.conn = sql.connect(self.dir)
+        with self.conn as c:
+            curs = c.execute("""SELECT DISTINCT tag
+            FROM tags""")
+            for element in curs:
+                tags.append(element[0])
+        return tags
+
+    def recuperer_id_article(self, tag):
+        self.conn = sql.connect(self.dir)
+        with self.conn as c:
+            curs = c.execute("""SELECT id 
+            FROM tags WHERE tags.tag = ?""", 
+            (tag,))
+            articles = curs.fetchall()
+        return articles
+
+    def recuperer_mdp(self, login):
+        self.conn = sql.connect(self.dir)
+        with self.conn as c:
+            curs = c.execute("""SELECT mdp FROM membres WHERE login = ?""",
+                     (login,)
+            )
+        return curs.fetchone()

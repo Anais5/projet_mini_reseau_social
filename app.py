@@ -1,7 +1,7 @@
 from flask import Flask, url_for, request, redirect, render_template, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from outils.data_base import DataBase
-#from outils.fonctions import liste_tags
+from outils.fonctions import liste_tags, page_recherche_tags, separer_tags
 from outils.settings import DB_DIR, HOST_IP
 
 app = Flask(__name__, template_folder='templates')
@@ -49,7 +49,7 @@ def inscrire():
     if request.method == "POST":
         login = request.form["username"]
         mdp = request.form["password"]
-        membre = db.recuperer_mdp(login)
+        membre = db.recuperer_mdp(login) 
         verif = db.verif_pseudo(login)
         id = db.get_membre_id(login)
         if membre is not None:
@@ -117,5 +117,28 @@ def recherche_membre():
             error = f"Il n'y a pas de membre portant le pseudo {user} !"
             return render_template('profil.html', error=error)
     return render_template('profil.html')
+
+@app.route('/recherche', methods=["GET", "POST"])
+def recherche_tags():
+    tags_existants = db.rechercher_tags()
+    if request.method == "POST":
+        recherche = []
+        for tag in tags_existants:
+            courant = request.form[tag]
+            if courant == 'on':
+                recherche.append(courant)
+        tags = "&".join(recherche)
+        return redirect(url_for('resultat_recherche', tags=tags))
+    return page_recherche_tags(tags_existants)
+
+@app.route('/resultat_recherche/<tags>')
+def resultat_recherche(tags):
+    liste_tags = separer_tags(tags)
+    liste_articles = []
+    for tag in liste_tags:
+        articles_tag = db.recuperer_id_article(tag)
+        liste_articles.append(articles_tag)
+    for article in liste_articles:
+        pass
 
 app.run(host=HOST_IP)
