@@ -20,6 +20,7 @@ def login():
         mdp = request.form["password"]
         membre = db.recuperer_compte(login)
         membre = membre[0]
+        id = db.get_membre_id(login)
         verif = db.verif_pseudo(login)
         if verif is None:
             error = 'Identifiant incorrect.'
@@ -28,9 +29,10 @@ def login():
             error = "Mot de passe incorrect."
             return render_template('login.html', error=error)
         # membre = None ou est un 2-tuple de la forme (id, mdp)
-        if check_password_hash(membre[1], mdp) == True: # mieux: check_password_hash(membre[1], mdp)
+        if check_password_hash(membre[1], mdp): # mieux: check_password_hash(membre[1], mdp)
             session.clear()
             # enregistrons quelques informations utiles dans l'objet session.
+            membre = (id, login, mdp)
             session['mbrid'] = membre[0]
             session['login'] = login
             return redirect(url_for('accueil'))
@@ -47,8 +49,9 @@ def inscrire():
     if request.method == "POST":
         login = request.form["username"]
         mdp = request.form["password"]
-        membre = db.recuperer_compte(login)
+        membre = db.recuperer_mdp(login)
         verif = db.verif_pseudo(login)
+        id = db.get_membre_id(login)
         if membre is not None:
             error = 'Vous êtes déjà inscrit.'
             return render_template('inscription.html', error=error)
@@ -57,7 +60,7 @@ def inscrire():
             return render_template('inscription.html', error=error)
         hashed_value = generate_password_hash(mdp, method='pbkdf2:sha256')
         db.ajouter_membre(login, hashed_value)
-        membre = (login, mdp)
+        membre = (id, login, mdp)
         # commencer la session
         session.clear()
         # enregistrons quelques informations utiles dans l'objet session.
