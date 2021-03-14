@@ -55,6 +55,14 @@ class DataBase:
                      )
         return curs.fetchall()
 
+    def recuperer_mdp(self, login):
+        self.conn = sql.connect(self.dir)
+        with self.conn as c:
+            curs = c.execute("""SELECT mdp FROM membres WHERE login = ?""",
+                     (login,)
+            )
+        return curs.fetchone()
+
     def verif_pseudo(self, login):
         self.conn = sql.connect(self.dir)
         with self.conn as c:
