@@ -46,7 +46,6 @@ class DataBase:
             )
             c.commit()
 
-
     def recuperer_compte(self, login):
         self.conn = sql.connect(self.dir)
         curs = self.conn.cursor()
@@ -59,7 +58,7 @@ class DataBase:
         self.conn = sql.connect(self.dir)
         with self.conn as c:
             curs = c.execute("""SELECT mdp FROM membres WHERE login = ?""",
-                     (login,)
+                            (login,)
             )
         return curs.fetchone()
 
@@ -93,11 +92,23 @@ class DataBase:
             )
         return curs.fetchall()
 
+    def recuperer_article_par_id(self, a_id):
+        self.conn = sql.connect(self.dir)
+        with self.conn as c:
+            curs = c.execute("""SELECT articles.id, articles.cree_le, articles.titre, articles.contenu, membre.login
+                                FROM articles JOIN membres
+                                ON articles.auteur_id == membre.id
+                                WHERE (articles.id = ?)
+                                ORDER BY articles.cree_le DESC""",
+                             (a_id,)
+            )
+        return curs.fetchall()
+
     def ajouter_membre(self, login, mdp):
         self.conn = sql.connect(self.dir)
         with self.conn as c:
             c.execute("""INSERT INTO membres (login, mdp) VALUES (?, ?)""",
-                              (login, mdp)
+                    (login, mdp)
             )
             c.commit()
 
@@ -112,14 +123,13 @@ class DataBase:
         id_a = curs.fetchall()[-1]
         return id_a
 
-
     def inserer_tag(self, id, tag):
         self.conn = sql.connect(self.dir)
         with self.conn as c:
             c.execute("""INSERT INTO tags
             VALUES (?, ?)""",
                     (str(tag), id[0])
-                )
+            )
             c.commit()
 
     def rechercher_tags(self):
@@ -135,9 +145,10 @@ class DataBase:
     def recuperer_id_article(self, tag):
         self.conn = sql.connect(self.dir)
         with self.conn as c:
-            curs = c.execute("""SELECT id 
+            curs = c.execute("""SELECT article 
             FROM tags WHERE tags.tag = ?""", 
-            (tag,))
+                            (tag,)
+            )
             articles = curs.fetchall()
         return articles
 
@@ -145,6 +156,6 @@ class DataBase:
         self.conn = sql.connect(self.dir)
         with self.conn as c:
             curs = c.execute("""SELECT mdp FROM membres WHERE login = ?""",
-                     (login,)
+                            (login,)
             )
         return curs.fetchone()

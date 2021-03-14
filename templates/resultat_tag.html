@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block entete %}
+  <h1>{% block titre %}Recherche{% endblock %}</h1>
+{% endblock %}
+
+{% block contenu %}
+    {% if error %}
+    <h1>Erreur: {{ error }}</h1>
+    {% endif %}
+
+    {% if tags %}
+    <h1>Articles comportant les tags {{ tags }}</h1>
+      {% for article_id, user, cree_le, titre, contenu in articles %}
+          <article>
+            <head>
+              <h1>{{ titre }}</h1>
+              <aside>
+                crée le {{ cree_le }} par <em>{{ user }}</em>
+              </aside>
+            </head>
+            <p class="contenu">{{ contenu }}</p>
+            {% if 'login' in session and session['login'] == user %}
+              <a href="{{ url_for('supprimer', id=article_id) }}">supprimer cet article</a>
+            {% endif %}
+            {% if not loop.last %}
+            <hr/>
+            {% endif %}
+          </article>
+      {% endfor %}
+    {% endif %}
+{% endblock %}

@@ -38,11 +38,11 @@ def login():
             return redirect(url_for('accueil'))
     return render_template('login.html')
 
-
 @app.route('/logout')
 def logout():
     session.clear()
     return redirect(url_for('accueil'))
+
 
 @app.route('/inscription', methods=["GET", "POST"])
 def inscrire():
@@ -101,12 +101,14 @@ def ajouter():
     </form>
     """
 
+
 @app.route('/supprimer/<int:id>')
 def supprimer(id):
     db.supprimer_article(id)
     return redirect(url_for('accueil'))
 
-@app.route('/recherche_membre/', methods=["GET", "POST"])
+
+@app.route('/recherche_membre', methods=["GET", "POST"])
 def recherche_membre():
     if request.method == "POST":
         user = request.form["username"]
@@ -118,27 +120,35 @@ def recherche_membre():
             return render_template('profil.html', error=error)
     return render_template('profil.html')
 
+
 @app.route('/recherche', methods=["GET", "POST"])
 def recherche_tags():
     tags_existants = db.rechercher_tags()
     if request.method == "POST":
         recherche = []
+        print(request.form.getlist('tag'))
         for tag in tags_existants:
-            courant = request.form[tag]
-            if courant == 'on':
-                recherche.append(courant)
+            t = None
+            if t:
+                recherche.append(tag)
+        print(recherche)
+        if recherche == []:
+            error = "Il n'y a aucuns tags selectionnés !"
+            return render_template('resultat_tag.html', error=error)
         tags = "&".join(recherche)
-        return redirect(url_for('resultat_recherche', tags=tags))
+        liste_tags = separer_tags(tags)
+        liste_id = []
+        liste_articles = []
+        for tag in liste_tags:
+            articles_id = db.recuperer_id_article(tag)
+            for i in articles_id:
+                i = i[0]
+                liste_id.append(i)
+        for id in liste_id:
+            a = db.recuperer_article_par_id(id)
+            liste_articles.append(a)
+        return render_template('resultat_tag.html', articles=liste_articles, tags=tags)
     return page_recherche_tags(tags_existants)
 
-@app.route('/resultat_recherche/<tags>')
-def resultat_recherche(tags):
-    liste_tags = separer_tags(tags)
-    liste_articles = []
-    for tag in liste_tags:
-        articles_tag = db.recuperer_id_article(tag)
-        liste_articles.append(articles_tag)
-    for article in liste_articles:
-        pass
 
-app.run(host=HOST_IP)
+app.run(host=HOST_IP, debug=True)
