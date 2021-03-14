@@ -47,7 +47,7 @@ def inscrire():
     if request.method == "POST":
         login = request.form["username"]
         mdp = request.form["password"]
-        membre = db.recuperer_compte(login)
+        membre = db.recuperer_mdp(login) 
         verif = db.verif_pseudo(login)
         if membre is not None:
             error = 'Vous êtes déjà inscrit.'
@@ -133,7 +133,7 @@ def resultat_recherche(tags):
     liste_tags = separer_tags(tags)
     liste_articles = []
     for tag in liste_tags:
-        articles_tag = recuperer_id_article(tag)
+        articles_tag = db.recuperer_id_article(tag)
         liste_articles.append(articles_tag)
     for article in liste_articles:
         pass

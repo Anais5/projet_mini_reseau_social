@@ -124,7 +124,7 @@ class DataBase:
                 tags.append(element[0])
         return tags
 
-    def recuperer_id_article(tag):
+    def recuperer_id_article(self, tag):
         self.conn = sql.connect(self.dir)
         with self.conn as c:
             curs = c.execute("""SELECT id 
@@ -132,3 +132,11 @@ class DataBase:
             (tag,))
             articles = curs.fetchall()
         return articles
+
+    def recuperer_mdp(self, login):
+        self.conn = sql.connect(self.dir)
+        with self.conn as c:
+            curs = c.execute("""SELECT mdp FROM membres WHERE login = ?""",
+                     (login,)
+            )
+        return curs.fetchone()
