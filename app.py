@@ -19,17 +19,16 @@ def login():
         login = request.form["username"]
         mdp = request.form["password"]
         membre = db.recuperer_compte(login)
-        membre = membre[0]
         id = db.get_membre_id(login)
         verif = db.verif_pseudo(login)
         if verif is None:
             error = 'Identifiant incorrect.'
             return render_template('login.html', error=error)
-        if membre is None:
+        if check_password_hash(membre[0][1], mdp) == False:
             error = "Mot de passe incorrect."
             return render_template('login.html', error=error)
         # membre = None ou est un 2-tuple de la forme (id, mdp)
-        if check_password_hash(membre[1], mdp): # mieux: check_password_hash(membre[1], mdp)
+        if check_password_hash(membre[0][1], mdp): # mieux: check_password_hash(membre[1], mdp)
             session.clear()
             # enregistrons quelques informations utiles dans l'objet session.
             membre = (id, login, mdp)

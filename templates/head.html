@@ -1,13 +1,18 @@
-<h1>Mini-Blog</h1>
-<ul>
-{% if 'login' in session %}
-  <li><span>{{ session['login'] }}</span>
-  <li><a href="{{ url_for('accueil') }}">Revenir à l'accueil</a>
-  <li><a href="{{ url_for('logout') }}">Se déconnecter</a>
-  <li><a href="{{ url_for('suppr_compte') }}">Supprimer compte</a>
-{% else %}
-  <li><a href="{{ url_for('accueil') }}">Revenir à l'accueil</a>
-  <li><a href="{{ url_for('inscrire') }}">S'inscrire</a>
-  <li><a href="{{ url_for('login') }}">Se connecter</a>
-{% endif %}
-</ul>
+<link href="static/head.css" rel="stylesheet">
+<h1>
+  <center>Mini-Blog</center>
+</h1>
+  {% if 'login' in session %}
+    <div class="cleannav">
+      <a>{{ session['login'] }}</a>
+      <a href="{{ url_for('accueil') }}">Revenir à l'accueil</a>
+      <a href="{{ url_for('logout') }}">Se déconnecter</a>
+      <a href="{{ url_for('suppr_compte') }}">Supprimer compte</a>
+    </div>
+  {% else %}
+    <div class="cleannav">
+      <a href="{{ url_for('accueil') }}">Revenir à l'accueil</a>
+      <a href="{{ url_for('inscrire') }}">S'inscrire</a>
+      <a href="{{ url_for('login') }}">Se connecter</a>
+    </div>
+  {% endif %}

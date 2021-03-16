@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
 
 {% block entete %}
-  <h1>{% block titre %}Profil{% endblock %}</h1>
+  <h1 style="padding: 5px">{% block titre %}Profil{% endblock %}</h1>
     <form action="{{ url_for('recherche_membre') }}" method="post">
       <div class="form-group">
-        <label for="username">Cherchez un membre:</label>
+        <label style="padding: 5px" for="username">Cherchez un membre:</label>
           <input type="text" name="username" id="username" class="form-control">
       </div>
-      <button type="submit">Recherche</button>
+      <button style="margin: 5px" type="submit">Recherche</button>
     </form>
 {% endblock %}
 

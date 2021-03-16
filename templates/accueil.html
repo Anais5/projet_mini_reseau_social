@@ -1,17 +1,22 @@
 {% extends 'base.html' %}
 
 {% block entete %}
-  <h1>{% block titre %}Accueil{% endblock %}</h1>
+<link href="static/accueil.css" rel="stylesheet">
+  <h1 style="padding:5px">
+    {% block titre %}Accueil{% endblock %}
+  </h1>
   {% if 'mbrid' in session %}
-    <a class="action" href="{{ url_for('ajouter') }}">Ajouter</a></br>
-    <a class="action" href="{{ url_for('recherche_membre') }}">Rechercher un membre</a></br>
-    <a class="action" href="{{ url_for('recherche_tags') }}">Rechercher des articles</a></br>
+    <div class="navbar" style="padding: 5px">
+      <a class="action" href="{{ url_for('ajouter') }}">Ajouter</a>
+      <a class="action" href="{{ url_for('recherche_membre') }}">Rechercher un membre</a>
+      <a class="action" href="{{ url_for('recherche_tags') }}">Rechercher des articles</a>
+    </div>
   {% endif %}
 {% endblock %}
 
 {% block contenu %}
     {% for article_id, login, cree_le, titre, contenu in articles %}
-        <article>
+        <center><article>
           <head>
             <h1>{{ titre }}</h1>
             <aside>
@@ -25,6 +30,6 @@
           {% if not loop.last %}
           <hr/>
           {% endif %}
-        </article>
+        </article></center>
     {% endfor %}
 {% endblock %}
