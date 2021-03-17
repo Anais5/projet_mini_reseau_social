@@ -131,12 +131,20 @@ def recherche_tags():
     tags_existants = db.rechercher_tags()
     if request.method == "POST":
         recherche = []
-        print(request.form.getlist('tag'))
+        tag_chercher = request.form.getlist('tag')
+        lt = []
+        print(tag_chercher) # test à effacer plus tard
+        for tags in tag_chercher:
+            lt.extend(tags.strip().split('/'))
+            print(lt) # test à effacer plus tard
+            lt.remove('')
+        print(lt[0]) # test à effacer plus tard
+        listedarticles = db.recuperer_article_par_tag(lt[0])
+        print(listedarticles) # test à effacer plus tard
         for tag in tags_existants:
             t = None
-            if t:
+            if t == None:
                 recherche.append(tag)
-        print(recherche)
         if recherche == []:
             error = "Il n'y a aucuns tags selectionnés !"
             return render_template('resultat_tag.html', error=error)
@@ -152,7 +160,7 @@ def recherche_tags():
         for id in liste_id:
             a = db.recuperer_article_par_id(id)
             liste_articles.append(a)
-        return render_template('resultat_tag.html', articles=liste_articles, tags=tags)
+        return render_template('resultat_tag.html', articles=listedarticles, tags=lt[0])
     return page_recherche_tags(tags_existants)
 
 

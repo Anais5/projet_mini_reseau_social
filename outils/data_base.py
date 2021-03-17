@@ -95,13 +95,25 @@ class DataBase:
     def recuperer_article_par_id(self, a_id):
         self.conn = sql.connect(self.dir)
         with self.conn as c:
-            curs = c.execute("""SELECT articles.id, articles.cree_le, articles.titre, articles.contenu, membre.login
+            curs = c.execute("""SELECT articles.id, membres.login, articles.cree_le, articles.titre, articles.contenu
                                 FROM articles JOIN membres
-                                ON articles.auteur_id == membre.id
+                                ON articles.auteur_id == membres.id
                                 WHERE (articles.id = ?)
                                 ORDER BY articles.cree_le DESC""",
                              (a_id,)
             )
+        return curs.fetchall()
+
+    def recuperer_article_par_tag(self, tag):
+        self.conn = sql.connect(self.dir)
+        with self.conn as c:
+            curs = c.execute("""SELECT articles.id, articles.auteur_id, articles.cree_le, articles.titre, articles.contenu 
+                                FROM tags JOIN articles 
+								ON articles.id = tags.article
+                                WHERE tags.tag IN (?)
+                                ORDER BY articles.cree_le DESC""",
+                             (tag,)
+                             )
         return curs.fetchall()
 
     def ajouter_membre(self, login, mdp):
