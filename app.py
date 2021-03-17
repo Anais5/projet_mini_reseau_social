@@ -100,6 +100,12 @@ def ajouter():
     </form>
     """
 
+@app.route('/page_perso', methods=["GET", "POST"])
+def page_perso():
+    login = session['login']
+    id = db.get_membre_id(login)
+    return render_template('page_perso.html', user=login, mesarticles=db.recuperer_articles_membre(id))
+
 
 @app.route('/supprimer/<int:id>')
 def supprimer(id):

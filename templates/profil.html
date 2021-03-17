@@ -13,13 +13,14 @@
 
 {% block contenu %}
     {% if error %}
-    <h1>Erreur: {{ error }}</h1>
+    <h1 style="padding:5px">Erreur: {{ error }}</h1>
     {% endif %}
 
     {% if user %}
-    <h1>Articles de {{ user }}</h1>
+    <h1 style="padding:5px">Articles de {{ user }}</h1>
       {% for article_id, cree_le, titre, contenu in articles %}
-          <article>
+
+          <center><article>
             <head>
               <h1>{{ titre }}</h1>
               <aside>
@@ -33,7 +34,7 @@
             {% if not loop.last %}
             <hr/>
             {% endif %}
-          </article>
+          </article></center>
       {% endfor %}
     {% endif %}
 {% endblock %}
