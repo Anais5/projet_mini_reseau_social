@@ -4,7 +4,7 @@
 </h1>
   {% if 'login' in session %}
     <div class="cleannav">
-      <a>{{ session['login'] }}</a>
+      <a href="{{ url_for('page_perso') }}">{{ session['login'] }}</a>
       <a href="{{ url_for('accueil') }}">Revenir à l'accueil</a>
       <a href="{{ url_for('logout') }}">Se déconnecter</a>
       <a href="{{ url_for('suppr_compte') }}">Supprimer compte</a>
