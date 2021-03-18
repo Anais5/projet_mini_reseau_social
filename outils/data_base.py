@@ -107,9 +107,10 @@ class DataBase:
     def recuperer_article_par_tag(self, tag):
         self.conn = sql.connect(self.dir)
         with self.conn as c:
-            curs = c.execute("""SELECT articles.id, articles.auteur_id, articles.cree_le, articles.titre, articles.contenu 
-                                FROM tags JOIN articles 
+            curs = c.execute(""" SELECT articles.id, membres.login, articles.cree_le, articles.titre, articles.contenu 
+                                FROM tags JOIN articles JOIN membres
 								ON articles.id = tags.article
+								AND articles.auteur_id = membres.id
                                 WHERE tags.tag IN (?)
                                 ORDER BY articles.cree_le DESC""",
                              (tag,)
@@ -149,7 +150,7 @@ class DataBase:
         self.conn = sql.connect(self.dir)
         with self.conn as c:
             curs = c.execute("""SELECT DISTINCT tag
-            FROM tags""")
+            FROM tags WHERE tag != "" """)
             for element in curs:
                 tags.append(element[0])
         return tags
