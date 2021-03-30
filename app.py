@@ -3,9 +3,11 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from outils.data_base import DataBase
 from outils.fonctions import liste_tags, page_recherche_tags, separer_tags
 from outils.settings import DB_DIR, HOST_IP
+from flask_socketio import SocketIO
 
 app = Flask(__name__, template_folder='templates')
 app.secret_key = "dev"
+socketio = SocketIO(app)
 db = DataBase(DB_DIR)
 
 #page d'accueil
@@ -84,6 +86,12 @@ def ajouter():
         contenu = request.form["contenu"]
         tags = liste_tags(request.form["tags"])
         auteur_id = db.get_membre_id(session['login'])
+        if not titre:
+            error = "Veuillez remplir tous les champs marqué d'une étoile !"
+            return render_template('ajout.html', error=error)
+        if not contenu:
+            error = "Veuillez remplir tous les champs marqué d'une étoile !"
+            return render_template('ajout.html', error=error)
         if titre and contenu:
             db.inserer_article(auteur_id, titre, contenu)
             if tags:
@@ -91,14 +99,7 @@ def ajouter():
                 for tag in tags:
                     db.inserer_tag(id, tag)
             return redirect(url_for('accueil'))
-    return """
-    <form method="post">
-        Titre*: <input name="titre"/><br/>
-        Contenu*: <textarea name="contenu"></textarea><br/>
-        Tags (séparés par des virgules): <input name="tags"/><br/>
-        <input type="submit" value="Enregistrer"/>
-    </form>
-    """
+    return render_template('ajout.html')
 
 @app.route('/page_perso', methods=["GET", "POST"])
 def page_perso():
@@ -133,19 +134,41 @@ def recherche_tags():
         recherche = []
         tag_chercher = request.form.getlist('tag')
         lt = []
-        print(tag_chercher) # test à effacer plus tard
-        for tags in tag_chercher:
-            lt.extend(tags.strip().split('/'))
-            print(lt) # test à effacer plus tard
-            lt.remove('')
-        print(lt[0]) # test à effacer plus tard
-        listedarticles = db.recuperer_article_par_tag(lt[0])
-        print(listedarticles) # test à effacer plus tard
+        ltt = []
+        print(tag_chercher)
+        print(len(tag_chercher)) # test à effacer plus tard
+        if len(tag_chercher) == 1:
+            for tags in tag_chercher:
+                lt.extend(tags.strip().split('/'))
+                lt.remove('')
+            listedarticles = db.recuperer_article_par_tag(lt[0])
+            print(listedarticles)
+            print(lt)
+        else:
+            listedarticles = []
+            for tags in tag_chercher:
+                lt.extend(tags.strip().split('/'))
+                lt.remove('')
+                ltt.extend(tags.strip().split('/'))
+                ltt.remove('')
+                for i in lt:
+                    print(i)
+                    print(lt)
+                    listedarticles.extend(db.recuperer_article_par_tag(i))
+                    print(listedarticles)
+                    lt.pop(0)
+                    print(i)
+                    print(lt)
+            print(lt)
+            print(listedarticles) # test à effacer plus tard
+            print(ltt)
+            ltt = [', '.join(ltt)]
+            print(ltt[0])
         for tag in tags_existants:
             t = None
             if t == None:
                 recherche.append(tag)
-        if recherche == []:
+        if tag_chercher == []:
             error = "Il n'y a aucuns tags selectionnés !"
             return render_template('resultat_tag.html', error=error)
         tags = "&".join(recherche)
@@ -160,8 +183,27 @@ def recherche_tags():
         for id in liste_id:
             a = db.recuperer_article_par_id(id)
             liste_articles.append(a)
-        return render_template('resultat_tag.html', articles=listedarticles, tags=lt[0])
+        if len(tag_chercher) == 1:
+            return render_template('resultat_tag.html', articles=listedarticles, tags=lt[0])
+        else:
+            return render_template('resultat_tag.html', articles=listedarticles, tags=ltt[0])
     return page_recherche_tags(tags_existants)
 
 
-app.run(host=HOST_IP, debug=True)
+@app.route('/chatroom')
+def sessions():
+    return render_template('session.html')
+
+
+def messageReceived(methods=['GET', 'POST']):
+    print('message was received!!!')
+
+
+@socketio.on('my event')
+def handle_my_custom_event(json, methods=['GET', 'POST']):
+    print('received my event: ' + str(json))
+    socketio.emit('my response', json, callback=messageReceived)
+
+
+if __name__ == '__main__':
+    socketio.run(app, debug=True)

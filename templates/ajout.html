@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block entete %}
+  <h1 style="padding: 5px">{% block titre %}Ajouter un article{% endblock %}</h1>
+{% endblock %}
+
+
+
+{% block contenu %}
+    {% if error %}
+        <p style="padding: 5px" class="text-danger">Erreur: {{ error }}</p>
+    {% endif %}
+
+
+        <form style="padding: 5px" method="post">
+            Titre*: <input name="titre"/><br/>
+            Contenu*: <textarea name="contenu"></textarea><br/>
+            Tags (séparés par des virgules): <input size="22" placeholder="Si vide, sera marqué 'Sans tag'" name="tags"/><br/>
+            <input type="submit" value="Ajouter"/>
+        </form>
+{% endblock %}

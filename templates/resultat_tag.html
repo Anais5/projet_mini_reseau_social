@@ -10,13 +10,13 @@
     {% endif %}
 
     {% if tags %}
-    <h1>Articles comportant les tags {{ tags }}</h1>
+    <h1>Articles comportant les tags {{ tags }}:</h1>
       {% for article_id, login, cree_le, titre, contenu in articles %}
           <center><article>
             <head>
               <h1>{{ titre }}</h1>
               <aside>
-                crée le {{ cree_le }} par <em>{{ user }}</em>
+                crée le {{ cree_le }} par <em>{{ login }}</em>
               </aside>
             </head>
             <p class="contenu">{{ contenu }}</p>
