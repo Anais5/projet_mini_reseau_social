@@ -3,9 +3,11 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from outils.data_base import DataBase
 from outils.fonctions import liste_tags, page_recherche_tags, separer_tags
 from outils.settings import DB_DIR, HOST_IP
+from flask_socketio import SocketIO
 
 app = Flask(__name__, template_folder='templates')
 app.secret_key = "dev"
+socketio = SocketIO(app)
 db = DataBase(DB_DIR)
 
 #page d'accueil
@@ -188,4 +190,20 @@ def recherche_tags():
     return page_recherche_tags(tags_existants)
 
 
-app.run(host=HOST_IP, debug=True)
+@app.route('/chatroom')
+def sessions():
+    return render_template('session.html')
+
+
+def messageReceived(methods=['GET', 'POST']):
+    print('message was received!!!')
+
+
+@socketio.on('my event')
+def handle_my_custom_event(json, methods=['GET', 'POST']):
+    print('received my event: ' + str(json))
+    socketio.emit('my response', json, callback=messageReceived)
+
+
+if __name__ == '__main__':
+    socketio.run(app, debug=True)
